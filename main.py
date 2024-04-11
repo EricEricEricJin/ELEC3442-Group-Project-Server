@@ -33,7 +33,7 @@ class Switch:
             data, self.plane_addr = self.plane_sock.recvfrom(self.data_max_recv)
             print("data", data)
             if self.ground_addr:
-                self.ground_sock.sento(data, self.ground_addr)
+                self.ground_sock.sendto(data, self.ground_addr)
 
     def _cmd_task(self):
         while self.serve:
@@ -41,8 +41,8 @@ class Switch:
             cmd, self.ground_addr = self.ground_sock.recvfrom(self.cmd_max_recv)
             print("cmd", cmd)
             if self.plane_addr:
-                self.plane_sock.sento(cmd, self.plane_addr)
+                self.plane_sock.sendto(cmd, self.plane_addr)
 
 if __name__ == "__main__":
-    sw = Switch("192.168.219.105", 1234, 1235, 1024, 1024)
+    sw = Switch("154.221.20.43", 1234, 1235, 1024, 1024)
     sw.start()
