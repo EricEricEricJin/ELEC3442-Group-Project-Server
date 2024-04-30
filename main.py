@@ -29,20 +29,38 @@ class Switch:
 
     def _data_task(self):
         while self.serve:
-            print("waiting data")
-            data, self.plane_addr = self.plane_sock.recvfrom(self.data_max_recv)
-            print("data", data)
-            if self.ground_addr:
-                self.ground_sock.sendto(data, self.ground_addr)
+            # print("wait...")
+            try:
+                data, self.plane_addr = self.plane_sock.recvfrom(self.data_max_recv)
+                if self.ground_addr:
+                    self.ground_sock.sendto(data, self.ground_addr)
+                # print(len(data))
+            except Exception as e:
+                print("data err", e)
 
     def _cmd_task(self):
         while self.serve:
-            print("waiting cmd")
-            cmd, self.ground_addr = self.ground_sock.recvfrom(self.cmd_max_recv)
-            print("cmd", cmd)
-            if self.plane_addr:
-                self.plane_sock.sendto(cmd, self.plane_addr)
+            try:
+                cmd, self.ground_addr = self.ground_sock.recvfrom(self.cmd_max_recv)
+                if self.plane_addr:
+                    self.plane_sock.sendto(cmd, self.plane_addr)
+            except Exception as e:
+                print("cmd err", e)
+
+IP = "154.221.20.43"
+plane_port = 1234
+ground_port = 1235
+
+video_plane_port = 1236
+video_ground_port = 1237
 
 if __name__ == "__main__":
-    sw = Switch("154.221.20.43", 1234, 1235, 1024, 1024)
+    import time 
+    sw = Switch(IP, plane_port, ground_port, 1024, 1024)
+    sw_video = Switch(IP, video_plane_port, video_ground_port, 1024*1024, 1024)
     sw.start()
+    sw_video.start()
+
+    # while True:
+    #     print("plane", sw_video.plane_addr, "gnd", sw_video.ground_addr)
+    #     time.sleep(1)
